@@ -52,7 +52,7 @@ pub(crate) async fn call_tool(
                 )
                 .await?;
             let id = handle.id.clone();
-            Ok::<_, ServiceError>((id, handle.await_response().await?))
+            Ok::<_, ServiceError>((id, crate::tool_request::await_response(handle).await?))
         }
         .await;
         let (id, result) = response.map_err(|error| {

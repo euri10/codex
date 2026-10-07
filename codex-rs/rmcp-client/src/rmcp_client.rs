@@ -879,7 +879,7 @@ impl RmcpClient {
                     }
                     let mut options = rmcp::service::PeerRequestOptions::no_options();
                     options.meta = meta;
-                    let result = service
+                    let handle = service
                         .peer()
                         .send_request_with_option(
                             ClientRequest::CallToolRequest(rmcp::model::CallToolRequest::new(
@@ -887,9 +887,8 @@ impl RmcpClient {
                             )),
                             options,
                         )
-                        .await?
-                        .await_response()
                         .await?;
+                    let result = crate::tool_request::await_response(handle).await?;
                     match result {
                         ServerResult::CallToolResult(result) => Ok(result),
                         _ => Err(rmcp::service::ServiceError::UnexpectedResponse),
@@ -1701,6 +1700,10 @@ async fn create_oauth_transport_and_runtime(
 #[cfg(test)]
 #[path = "tool_input_tests.rs"]
 mod tool_input_tests;
+
+#[cfg(test)]
+#[path = "tool_call_cancellation_tests.rs"]
+mod tool_call_cancellation_tests;
 
 #[cfg(test)]
 #[path = "user_verification_cancellation_tests.rs"]
